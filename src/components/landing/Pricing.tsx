@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { EmailCaptureDialog } from "./EmailCaptureDialog";
 
 const features = [
   "Trade logging dashboard",
@@ -15,6 +17,7 @@ const features = [
 ];
 
 export function Pricing() {
+  const [open, setOpen] = useState(false);
   return (
     <section id="pricing" className="py-24 relative">
       <div className="container mx-auto px-6">
@@ -37,7 +40,7 @@ export function Pricing() {
               <span className="text-5xl font-bold text-gradient-primary">$0</span>
               <span className="text-muted-foreground text-sm">forever</span>
             </div>
-            <Button variant="hero" size="lg" className="w-full mt-6">Get It Free</Button>
+            <Button variant="hero" size="lg" className="w-full mt-6" onClick={() => setOpen(true)}>Get It Free</Button>
             <ul className="mt-8 space-y-3">
               {features.map((f) => (
                 <li key={f} className="flex items-start gap-3 text-sm">
@@ -49,6 +52,7 @@ export function Pricing() {
           </div>
         </div>
       </div>
+      <EmailCaptureDialog open={open} onOpenChange={setOpen} />
     </section>
   );
 }

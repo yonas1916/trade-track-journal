@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, TrendingUp } from "lucide-react";
 import heroImg from "@/assets/hero-dashboard.jpg";
+import { EmailCaptureDialog } from "./EmailCaptureDialog";
 
 export function Hero() {
+  const [open, setOpen] = useState(false);
   return (
     <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-hero">
       <div className="absolute inset-0 grid-bg opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
@@ -25,7 +28,7 @@ export function Hero() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="hero" size="xl">
+            <Button variant="hero" size="xl" onClick={() => setOpen(true)}>
               Get the Template <ArrowRight />
             </Button>
             <Button variant="outline" size="xl">
@@ -52,6 +55,7 @@ export function Hero() {
           </div>
         </div>
       </div>
+      <EmailCaptureDialog open={open} onOpenChange={setOpen} />
     </section>
   );
 }
