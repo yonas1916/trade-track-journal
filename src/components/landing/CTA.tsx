@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { EmailCaptureDialog } from "./EmailCaptureDialog";
+import { Link } from "@tanstack/react-router";
 
 export function CTA() {
-  const [open, setOpen] = useState(false);
   return (
     <section className="py-24 relative">
       <div className="container mx-auto px-6">
@@ -20,15 +18,16 @@ export function CTA() {
               Your results won't change until your system does.
             </p>
             <div className="mt-10">
-              <Button variant="hero" size="xl" className="animate-glow" onClick={() => setOpen(true)}>
-                Get the Journal Now <ArrowRight />
-              </Button>
+              <Link to="/signup">
+                <Button variant="hero" size="xl" className="animate-glow">
+                  Create Free Account <ArrowRight />
+                </Button>
+              </Link>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">Instant access · Lifetime updates · 100% free</p>
           </div>
         </div>
       </div>
-      <EmailCaptureDialog open={open} onOpenChange={setOpen} />
     </section>
   );
 }
