@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, TrendingUp } from "lucide-react";
 import heroImg from "@/assets/hero-dashboard.jpg";
+import { EmailCaptureDialog } from "./EmailCaptureDialog";
 
 export function Hero() {
+  const [open, setOpen] = useState(false);
   return (
     <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-hero">
       <div className="absolute inset-0 grid-bg opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
