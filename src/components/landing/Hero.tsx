@@ -55,6 +55,7 @@ export function Hero() {
           </div>
         </div>
       </div>
+      <EmailCaptureDialog open={open} onOpenChange={setOpen} />
     </section>
   );
 }
