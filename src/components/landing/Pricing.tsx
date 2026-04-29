@@ -52,6 +52,7 @@ export function Pricing() {
           </div>
         </div>
       </div>
+      <EmailCaptureDialog open={open} onOpenChange={setOpen} />
     </section>
   );
 }
