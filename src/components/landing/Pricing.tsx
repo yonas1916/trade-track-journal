@@ -17,6 +17,7 @@ const features = [
 ];
 
 export function Pricing() {
+  const [open, setOpen] = useState(false);
   return (
     <section id="pricing" className="py-24 relative">
       <div className="container mx-auto px-6">
