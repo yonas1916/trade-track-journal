@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { LineChart, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { session } = useAuth();
   const links = [
     { href: "#features", label: "Features" },
     { href: "#how", label: "How It Works" },
@@ -31,8 +33,15 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button variant="hero" size="sm">Get the Template</Button>
+        <div className="hidden md:flex items-center gap-2">
+          {session ? (
+            <Link to="/dashboard"><Button variant="hero" size="sm">Open Dashboard</Button></Link>
+          ) : (
+            <>
+              <Link to="/login"><Button variant="ghost" size="sm">Sign in</Button></Link>
+              <Link to="/signup"><Button variant="hero" size="sm">Get Started Free</Button></Link>
+            </>
+          )}
         </div>
 
         <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
@@ -47,7 +56,11 @@ export function Navbar() {
               {l.label}
             </a>
           ))}
-          <Button variant="hero" size="sm">Get the Template</Button>
+          {session ? (
+            <Link to="/dashboard" onClick={() => setOpen(false)}><Button variant="hero" size="sm" className="w-full">Open Dashboard</Button></Link>
+          ) : (
+            <Link to="/signup" onClick={() => setOpen(false)}><Button variant="hero" size="sm" className="w-full">Get Started Free</Button></Link>
+          )}
         </div>
       )}
     </header>
