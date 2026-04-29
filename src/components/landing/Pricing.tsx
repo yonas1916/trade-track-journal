@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { EmailCaptureDialog } from "./EmailCaptureDialog";
 
 const features = [
   "Trade logging dashboard",
