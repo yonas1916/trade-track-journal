@@ -28,7 +28,7 @@ export function Hero() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="hero" size="xl">
+            <Button variant="hero" size="xl" onClick={() => setOpen(true)}>
               Get the Template <ArrowRight />
             </Button>
             <Button variant="outline" size="xl">
