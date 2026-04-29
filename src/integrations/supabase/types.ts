@@ -14,7 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      journal_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          lessons: string | null
+          market_notes: string | null
+          mindset_rating: number | null
+          mistakes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          lessons?: string | null
+          market_notes?: string | null
+          mindset_rating?: number | null
+          mistakes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          lessons?: string | null
+          market_notes?: string | null
+          mindset_rating?: number | null
+          mistakes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          account_currency: string
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          starting_balance: number
+          updated_at: string
+        }
+        Insert: {
+          account_currency?: string
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          starting_balance?: number
+          updated_at?: string
+        }
+        Update: {
+          account_currency?: string
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          starting_balance?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          direction: string
+          emotion: string | null
+          entry_price: number
+          exit_price: number | null
+          id: string
+          notes: string | null
+          opened_at: string
+          pnl: number | null
+          position_size: number
+          r_multiple: number | null
+          status: string
+          stop_loss: number | null
+          strategy: string | null
+          symbol: string
+          take_profit: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          direction: string
+          emotion?: string | null
+          entry_price: number
+          exit_price?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          pnl?: number | null
+          position_size?: number
+          r_multiple?: number | null
+          status?: string
+          stop_loss?: number | null
+          strategy?: string | null
+          symbol: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          direction?: string
+          emotion?: string | null
+          entry_price?: number
+          exit_price?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          pnl?: number | null
+          position_size?: number
+          r_multiple?: number | null
+          status?: string
+          stop_loss?: number | null
+          strategy?: string | null
+          symbol?: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
