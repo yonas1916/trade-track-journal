@@ -94,6 +94,8 @@ export type Database = {
           pnl: number | null
           position_size: number
           r_multiple: number | null
+          screenshot_after_url: string | null
+          screenshot_before_url: string | null
           status: string
           stop_loss: number | null
           strategy: string | null
@@ -115,6 +117,8 @@ export type Database = {
           pnl?: number | null
           position_size?: number
           r_multiple?: number | null
+          screenshot_after_url?: string | null
+          screenshot_before_url?: string | null
           status?: string
           stop_loss?: number | null
           strategy?: string | null
@@ -136,6 +140,8 @@ export type Database = {
           pnl?: number | null
           position_size?: number
           r_multiple?: number | null
+          screenshot_after_url?: string | null
+          screenshot_before_url?: string | null
           status?: string
           stop_loss?: number | null
           strategy?: string | null
