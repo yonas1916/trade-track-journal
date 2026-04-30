@@ -39,8 +39,7 @@ export function Hero() {
           </div>
 
           <div className="mt-8 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-            <span>⭐ 4.9/5 from 2,400+ traders</span>
-            <span className="hidden sm:inline">· Lifetime updates · Works on any device</span>
+            <span>Lifetime updates · Works on any device</span>
           </div>
         </div>
 
