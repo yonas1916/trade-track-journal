@@ -40,7 +40,7 @@ export function Footer() {
                 </a>
               ))}
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">hello@tradetrackpro.com</p>
+            
           </div>
         </div>
 
