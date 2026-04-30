@@ -1,10 +1,8 @@
 import { Star } from "lucide-react";
 
 const reviews = [
-  { name: "Marcus T.", role: "Forex Trader · 3 yrs", text: "Went from blowing accounts to consistent monthly profits. The emotion tracker alone was a game-changer.", initial: "M" },
-  { name: "Priya S.", role: "Crypto Day Trader", text: "I finally see which setups actually make me money. Cut my losing strategies in week one.", initial: "P" },
-  { name: "Devon K.", role: "Swing Trader", text: "Cleanest journal I've used. Notion makes it flexible and the analytics are surprisingly powerful.", initial: "D" },
-  { name: "Lina H.", role: "Beginner Trader", text: "I'm 6 months in and already profitable. This taught me discipline before I could lose serious money.", initial: "L" },
+  { name: "Kidus Manaye", role: "Forex Trader · 3 yrs", text: "Went from blowing accounts to consistent monthly profits. The emotion tracker alone was a game-changer.", initial: "K" },
+  { name: "Karma Tsegaye", role: "Crypto Day Trader", text: "I finally see which setups actually make me money. Cut my losing strategies in week one.", initial: "K" },
 ];
 
 export function Testimonials() {
@@ -14,7 +12,7 @@ export function Testimonials() {
         <div className="max-w-3xl mx-auto text-center mb-16">
           <span className="text-primary text-sm font-semibold uppercase tracking-wider">Testimonials</span>
           <h2 className="mt-3 text-4xl md:text-5xl font-bold">
-            Loved by <span className="text-gradient-primary">2,400+ traders</span>
+            Loved by <span className="text-gradient-primary">serious traders</span>
           </h2>
         </div>
 
