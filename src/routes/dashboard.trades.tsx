@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Plus, Trash2, ArrowUpRight, ArrowDownRight, ImageIcon, X } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/trades")({
   component: TradesPage,
@@ -29,6 +29,16 @@ interface Trade {
   notes: string | null;
   closed_at: string | null;
   opened_at: string;
+  screenshot_before_url: string | null;
+  screenshot_after_url: string | null;
+}
+
+const BUCKET = "trade-screenshots";
+
+async function getSignedUrl(path: string | null) {
+  if (!path) return null;
+  const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, 3600);
+  return data?.signedUrl ?? null;
 }
 
 function TradesPage() {
@@ -36,6 +46,7 @@ function TradesPage() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const load = async () => {
     if (!user) return;
@@ -51,11 +62,18 @@ function TradesPage() {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
 
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("trades").delete().eq("id", id);
+  const handleDelete = async (t: Trade) => {
+    const paths = [t.screenshot_before_url, t.screenshot_after_url].filter(Boolean) as string[];
+    if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+    const { error } = await supabase.from("trades").delete().eq("id", t.id);
     if (error) return toast.error(error.message);
     toast.success("Trade deleted");
     load();
+  };
+
+  const openPreview = async (path: string | null) => {
+    const url = await getSignedUrl(path);
+    if (url) setPreviewUrl(url);
   };
 
   return (
@@ -69,7 +87,7 @@ function TradesPage() {
           <DialogTrigger asChild>
             <Button variant="hero"><Plus /> Log Trade</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl bg-gradient-card border-border">
+          <DialogContent className="max-w-2xl bg-gradient-card border-border max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>New Trade</DialogTitle></DialogHeader>
             <NewTradeForm onSaved={() => { setOpen(false); load(); }} />
           </DialogContent>
@@ -94,6 +112,7 @@ function TradesPage() {
                   <th className="text-right px-4 py-3">Exit</th>
                   <th className="text-right px-4 py-3">P&L</th>
                   <th className="text-right px-4 py-3">R</th>
+                  <th className="text-left px-4 py-3">Charts</th>
                   <th className="text-left px-4 py-3">Strategy</th>
                   <th className="text-left px-4 py-3">Date</th>
                   <th className="px-4 py-3" />
@@ -115,10 +134,35 @@ function TradesPage() {
                       {t.pnl != null ? `$${Number(t.pnl).toFixed(2)}` : "—"}
                     </td>
                     <td className="px-4 py-3 text-right">{t.r_multiple != null ? `${Number(t.r_multiple).toFixed(2)}R` : "—"}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1">
+                        {t.screenshot_before_url ? (
+                          <button
+                            onClick={() => openPreview(t.screenshot_before_url)}
+                            className="text-xs px-2 py-1 rounded bg-muted/40 hover:bg-muted text-muted-foreground inline-flex items-center gap-1"
+                            title="Before entry"
+                          >
+                            <ImageIcon className="size-3" /> Before
+                          </button>
+                        ) : null}
+                        {t.screenshot_after_url ? (
+                          <button
+                            onClick={() => openPreview(t.screenshot_after_url)}
+                            className="text-xs px-2 py-1 rounded bg-muted/40 hover:bg-muted text-muted-foreground inline-flex items-center gap-1"
+                            title="After trade"
+                          >
+                            <ImageIcon className="size-3" /> After
+                          </button>
+                        ) : null}
+                        {!t.screenshot_before_url && !t.screenshot_after_url ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : null}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground">{t.strategy ?? "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(t.opened_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(t.id)}>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(t)}>
                         <Trash2 className="size-4 text-muted-foreground" />
                       </Button>
                     </td>
@@ -129,6 +173,43 @@ function TradesPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!previewUrl} onOpenChange={(o) => !o && setPreviewUrl(null)}>
+        <DialogContent className="max-w-4xl bg-background border-border">
+          <DialogHeader><DialogTitle>Chart screenshot</DialogTitle></DialogHeader>
+          {previewUrl && <img src={previewUrl} alt="Chart screenshot" className="w-full h-auto rounded-lg" />}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function FileField({
+  label,
+  file,
+  onChange,
+}: {
+  label: string;
+  file: File | null;
+  onChange: (f: File | null) => void;
+}) {
+  return (
+    <div>
+      <Label>{label}</Label>
+      <div className="mt-1 flex items-center gap-2">
+        <Input
+          type="file"
+          accept="image/*"
+          onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+          className="cursor-pointer"
+        />
+        {file && (
+          <Button type="button" variant="ghost" size="sm" onClick={() => onChange(null)}>
+            <X className="size-4" />
+          </Button>
+        )}
+      </div>
+      {file && <p className="text-xs text-muted-foreground mt-1 truncate">{file.name}</p>}
     </div>
   );
 }
@@ -147,9 +228,26 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
     emotion: "",
     notes: "",
   });
+  const [beforeFile, setBeforeFile] = useState<File | null>(null);
+  const [afterFile, setAfterFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const uploadShot = async (file: File, kind: "before" | "after") => {
+    if (!user) return null;
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${user.id}/${Date.now()}-${kind}.${ext}`;
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+    if (error) {
+      toast.error(`Upload failed: ${error.message}`);
+      return null;
+    }
+    return path;
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,6 +269,9 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
       }
     }
 
+    const beforePath = beforeFile ? await uploadShot(beforeFile, "before") : null;
+    const afterPath = afterFile ? await uploadShot(afterFile, "after") : null;
+
     const { error } = await supabase.from("trades").insert({
       user_id: user.id,
       symbol: form.symbol.toUpperCase(),
@@ -187,6 +288,8 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
       notes: form.notes || null,
       status: exit != null ? "closed" : "open",
       closed_at: exit != null ? new Date().toISOString() : null,
+      screenshot_before_url: beforePath,
+      screenshot_after_url: afterPath,
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
@@ -243,6 +346,8 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
           <Label>Notes</Label>
           <Textarea rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} className="mt-1" />
         </div>
+        <FileField label="Chart before entry" file={beforeFile} onChange={setBeforeFile} />
+        <FileField label="Chart after trade" file={afterFile} onChange={setAfterFile} />
       </div>
       <Button type="submit" variant="hero" className="w-full" disabled={submitting}>
         {submitting ? "Saving…" : "Save trade"}
