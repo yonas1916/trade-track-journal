@@ -91,15 +91,15 @@ function AnalyticsPage() {
             <AreaChart data={equity}>
               <defs>
                 <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="oklch(0.86 0.22 145)" stopOpacity={0.6} />
-                  <stop offset="100%" stopColor="oklch(0.86 0.22 145)" stopOpacity={0} />
+                  <stop offset="0%" stopColor="oklch(0.78 0.18 220)" stopOpacity={0.6} />
+                  <stop offset="100%" stopColor="oklch(0.78 0.18 220)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.3 0 0)" />
               <XAxis dataKey="i" stroke="oklch(0.6 0 0)" fontSize={12} />
               <YAxis stroke="oklch(0.6 0 0)" fontSize={12} />
               <Tooltip contentStyle={{ background: "oklch(0.18 0 0)", border: "1px solid oklch(0.3 0 0)", borderRadius: 8 }} />
-              <Area type="monotone" dataKey="equity" stroke="oklch(0.86 0.22 145)" fill="url(#eq)" strokeWidth={2} />
+              <Area type="monotone" dataKey="equity" stroke="oklch(0.78 0.18 220)" fill="url(#eq)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -114,7 +114,7 @@ function AnalyticsPage() {
               <XAxis dataKey="symbol" stroke="oklch(0.6 0 0)" fontSize={12} />
               <YAxis stroke="oklch(0.6 0 0)" fontSize={12} />
               <Tooltip contentStyle={{ background: "oklch(0.18 0 0)", border: "1px solid oklch(0.3 0 0)", borderRadius: 8 }} />
-              <Bar dataKey="pnl" fill="oklch(0.86 0.22 145)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="pnl" fill="oklch(0.78 0.18 220)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
