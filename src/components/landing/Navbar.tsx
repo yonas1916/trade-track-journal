@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -34,6 +35,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
+          <ThemeToggle />
           {session ? (
             <Link to="/dashboard"><Button variant="hero" size="sm">Open Dashboard</Button></Link>
           ) : (
@@ -44,9 +46,12 @@ export function Navbar() {
           )}
         </div>
 
-        <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
-          {open ? <X /> : <Menu />}
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          <ThemeToggle />
+          <button onClick={() => setOpen(!open)} aria-label="Menu">
+            {open ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
 
       {open && (

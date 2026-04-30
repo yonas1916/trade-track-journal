@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tansta
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { TrendingUp, LayoutDashboard, ListChecks, Calculator, BookOpen, BarChart3, LogOut } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
@@ -61,9 +62,12 @@ function DashboardLayout() {
         </nav>
         <div className="p-3 border-t border-border">
           <div className="px-3 py-2 text-xs text-muted-foreground truncate">{user?.email}</div>
-          <Button variant="ghost" size="sm" className="w-full justify-start" onClick={signOut}>
-            <LogOut className="size-4" /> Sign out
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" className="flex-1 justify-start" onClick={signOut}>
+              <LogOut className="size-4" /> Sign out
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </aside>
 
@@ -75,7 +79,10 @@ function DashboardLayout() {
             </div>
             <span className="font-bold text-sm">TradeTrack Pro</span>
           </Link>
-          <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="size-4" /></Button>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Button variant="ghost" size="sm" onClick={signOut}><LogOut className="size-4" /></Button>
+          </div>
         </header>
         <nav className="md:hidden border-b border-border px-2 py-2 flex gap-1 overflow-x-auto">
           {nav.map((item) => {
