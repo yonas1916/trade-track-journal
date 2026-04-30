@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowUpRight, ArrowDownRight, ImageIcon, X } from "lucide-react";
+import { Plus, Trash2, ArrowUpRight, ArrowDownRight, ImageIcon, X, Pencil, ClipboardPaste } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/trades")({
   component: TradesPage,
@@ -22,6 +22,8 @@ interface Trade {
   entry_price: number;
   exit_price: number | null;
   position_size: number;
+  stop_loss: number | null;
+  take_profit: number | null;
   pnl: number | null;
   r_multiple: number | null;
   strategy: string | null;
@@ -45,6 +47,7 @@ function TradesPage() {
   const { user } = useAuth();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Trade | null>(null);
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -89,7 +92,7 @@ function TradesPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl bg-gradient-card border-border max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>New Trade</DialogTitle></DialogHeader>
-            <NewTradeForm onSaved={() => { setOpen(false); load(); }} />
+            <TradeForm onSaved={() => { setOpen(false); load(); }} />
           </DialogContent>
         </Dialog>
       </div>
@@ -162,9 +165,14 @@ function TradesPage() {
                     <td className="px-4 py-3 text-muted-foreground">{t.strategy ?? "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(t.opened_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(t)}>
-                        <Trash2 className="size-4 text-muted-foreground" />
-                      </Button>
+                      <div className="inline-flex gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => setEditing(t)} title="Edit">
+                          <Pencil className="size-4 text-muted-foreground" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDelete(t)} title="Delete">
+                          <Trash2 className="size-4 text-muted-foreground" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -173,6 +181,18 @@ function TradesPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-2xl bg-gradient-card border-border max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Edit Trade</DialogTitle></DialogHeader>
+          {editing && (
+            <TradeForm
+              trade={editing}
+              onSaved={() => { setEditing(null); load(); }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!previewUrl} onOpenChange={(o) => !o && setPreviewUrl(null)}>
         <DialogContent className="max-w-4xl bg-background border-border">
@@ -184,59 +204,125 @@ function TradesPage() {
   );
 }
 
-function FileField({
+function ImageField({
   label,
   file,
+  existingPath,
   onChange,
+  onClearExisting,
 }: {
   label: string;
   file: File | null;
+  existingPath?: string | null;
   onChange: (f: File | null) => void;
+  onClearExisting?: () => void;
 }) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const [existingUrl, setExistingUrl] = useState<string | null>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!file) { setPreview(null); return; }
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  useEffect(() => {
+    let active = true;
+    if (existingPath && !file) {
+      getSignedUrl(existingPath).then((u) => { if (active) setExistingUrl(u); });
+    } else {
+      setExistingUrl(null);
+    }
+    return () => { active = false; };
+  }, [existingPath, file]);
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
+    if (item) {
+      const f = item.getAsFile();
+      if (f) {
+        onChange(f);
+        toast.success(`Pasted ${label.toLowerCase()}`);
+      }
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0];
+    if (f && f.type.startsWith("image/")) onChange(f);
+  };
+
+  const showUrl = preview || existingUrl;
+
   return (
     <div>
       <Label>{label}</Label>
-      <div className="mt-1 flex items-center gap-2">
+      <div
+        ref={dropRef}
+        onPaste={handlePaste}
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+        tabIndex={0}
+        className="mt-1 rounded-lg border border-dashed border-border bg-muted/10 p-3 focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        {showUrl ? (
+          <div className="relative">
+            <img src={showUrl} alt={label} className="w-full max-h-40 object-contain rounded" />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute top-1 right-1 bg-background/80"
+              onClick={() => { onChange(null); onClearExisting?.(); }}
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
+        ) : (
+          <div className="text-xs text-muted-foreground flex items-center gap-1 py-2">
+            <ClipboardPaste className="size-3" /> Paste, drop, or choose a file
+          </div>
+        )}
         <Input
           type="file"
           accept="image/*"
           onChange={(e) => onChange(e.target.files?.[0] ?? null)}
-          className="cursor-pointer"
+          className="cursor-pointer mt-2"
         />
-        {file && (
-          <Button type="button" variant="ghost" size="sm" onClick={() => onChange(null)}>
-            <X className="size-4" />
-          </Button>
-        )}
       </div>
-      {file && <p className="text-xs text-muted-foreground mt-1 truncate">{file.name}</p>}
     </div>
   );
 }
 
-function NewTradeForm({ onSaved }: { onSaved: () => void }) {
+function TradeForm({ trade, onSaved }: { trade?: Trade; onSaved: () => void }) {
   const { user } = useAuth();
+  const isEdit = !!trade;
   const [form, setForm] = useState({
-    symbol: "",
-    direction: "long" as "long" | "short",
-    entry_price: "",
-    exit_price: "",
-    position_size: "1",
-    stop_loss: "",
-    take_profit: "",
-    strategy: "",
-    emotion: "",
-    notes: "",
+    symbol: trade?.symbol ?? "",
+    direction: (trade?.direction ?? "long") as "long" | "short",
+    entry_price: trade?.entry_price?.toString() ?? "",
+    exit_price: trade?.exit_price?.toString() ?? "",
+    position_size: trade?.position_size?.toString() ?? "1",
+    stop_loss: trade?.stop_loss?.toString() ?? "",
+    take_profit: trade?.take_profit?.toString() ?? "",
+    strategy: trade?.strategy ?? "",
+    emotion: trade?.emotion ?? "",
+    notes: trade?.notes ?? "",
   });
   const [beforeFile, setBeforeFile] = useState<File | null>(null);
   const [afterFile, setAfterFile] = useState<File | null>(null);
+  const [keepBefore, setKeepBefore] = useState<string | null>(trade?.screenshot_before_url ?? null);
+  const [keepAfter, setKeepAfter] = useState<string | null>(trade?.screenshot_after_url ?? null);
   const [submitting, setSubmitting] = useState(false);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const uploadShot = async (file: File, kind: "before" | "after") => {
     if (!user) return null;
-    const ext = file.name.split(".").pop() || "png";
+    const ext = (file.name.split(".").pop() || file.type.split("/")[1] || "png").toLowerCase();
     const path = `${user.id}/${Date.now()}-${kind}.${ext}`;
     const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
       cacheControl: "3600",
@@ -269,10 +355,34 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
       }
     }
 
-    const beforePath = beforeFile ? await uploadShot(beforeFile, "before") : null;
-    const afterPath = afterFile ? await uploadShot(afterFile, "after") : null;
+    // Determine final image paths
+    let beforePath = keepBefore;
+    let afterPath = keepAfter;
 
-    const { error } = await supabase.from("trades").insert({
+    if (beforeFile) {
+      // remove old if replacing
+      if (trade?.screenshot_before_url && trade.screenshot_before_url !== keepBefore) {
+        await supabase.storage.from(BUCKET).remove([trade.screenshot_before_url]);
+      } else if (trade?.screenshot_before_url) {
+        await supabase.storage.from(BUCKET).remove([trade.screenshot_before_url]);
+      }
+      beforePath = await uploadShot(beforeFile, "before");
+    } else if (trade?.screenshot_before_url && !keepBefore) {
+      await supabase.storage.from(BUCKET).remove([trade.screenshot_before_url]);
+      beforePath = null;
+    }
+
+    if (afterFile) {
+      if (trade?.screenshot_after_url) {
+        await supabase.storage.from(BUCKET).remove([trade.screenshot_after_url]);
+      }
+      afterPath = await uploadShot(afterFile, "after");
+    } else if (trade?.screenshot_after_url && !keepAfter) {
+      await supabase.storage.from(BUCKET).remove([trade.screenshot_after_url]);
+      afterPath = null;
+    }
+
+    const payload = {
       user_id: user.id,
       symbol: form.symbol.toUpperCase(),
       direction: form.direction,
@@ -287,13 +397,18 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
       emotion: form.emotion || null,
       notes: form.notes || null,
       status: exit != null ? "closed" : "open",
-      closed_at: exit != null ? new Date().toISOString() : null,
+      closed_at: exit != null ? (trade?.closed_at ?? new Date().toISOString()) : null,
       screenshot_before_url: beforePath,
       screenshot_after_url: afterPath,
-    });
+    };
+
+    const { error } = isEdit
+      ? await supabase.from("trades").update(payload).eq("id", trade!.id)
+      : await supabase.from("trades").insert(payload);
+
     setSubmitting(false);
     if (error) return toast.error(error.message);
-    toast.success("Trade saved");
+    toast.success(isEdit ? "Trade updated" : "Trade saved");
     onSaved();
   };
 
@@ -346,11 +461,26 @@ function NewTradeForm({ onSaved }: { onSaved: () => void }) {
           <Label>Notes</Label>
           <Textarea rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} className="mt-1" />
         </div>
-        <FileField label="Chart before entry" file={beforeFile} onChange={setBeforeFile} />
-        <FileField label="Chart after trade" file={afterFile} onChange={setAfterFile} />
+        <ImageField
+          label="Chart before entry"
+          file={beforeFile}
+          existingPath={keepBefore}
+          onChange={setBeforeFile}
+          onClearExisting={() => setKeepBefore(null)}
+        />
+        <ImageField
+          label="Chart after trade"
+          file={afterFile}
+          existingPath={keepAfter}
+          onChange={setAfterFile}
+          onClearExisting={() => setKeepAfter(null)}
+        />
       </div>
+      <p className="text-xs text-muted-foreground">
+        Tip: copy a screenshot (e.g. Win+Shift+S / Cmd+Ctrl+Shift+4) then click an image box and press Ctrl/Cmd+V to paste.
+      </p>
       <Button type="submit" variant="hero" className="w-full" disabled={submitting}>
-        {submitting ? "Saving…" : "Save trade"}
+        {submitting ? "Saving…" : isEdit ? "Update trade" : "Save trade"}
       </Button>
     </form>
   );
