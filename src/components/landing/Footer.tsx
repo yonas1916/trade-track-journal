@@ -1,4 +1,4 @@
-import { LineChart, Send, Instagram, Github, Linkedin, Mail } from "lucide-react";
+import { LineChart, Send, Github, Linkedin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -29,12 +29,18 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-3 text-sm">Connect</h4>
             <div className="flex gap-3">
-              {[Send, Instagram, Github, Linkedin, Mail].map((Icon, i) => (
+              {[
+                { Icon: Send, href: "https://t.me/owners5", label: "Telegram" },
+                { Icon: Github, href: "https://github.com/yonas1916", label: "GitHub" },
+                { Icon: Linkedin, href: "https://www.linkedin.com/in/yonas-gizaw/", label: "LinkedIn" },
+              ].map(({ Icon, href, label }) => (
                 <a
-                  key={i}
-                  href="#"
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="size-9 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 transition-smooth"
-                  aria-label="social"
+                  aria-label={label}
                 >
                   <Icon className="size-4" />
                 </a>

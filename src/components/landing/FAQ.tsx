@@ -5,8 +5,7 @@ import {
 const faqs = [
   { q: "Is this beginner friendly?", a: "Absolutely. The template comes with onboarding instructions and is designed to be intuitive even if you've never journaled a trade before." },
   { q: "Do I need Notion experience?", a: "Not at all. If you can copy/paste, you can use this. Notion is free and we include a quick-start video." },
-  { q: "Can I customize it?", a: "Yes — every page, property, and view is fully editable. Make it yours." },
-  { q: "Is it a one-time payment?", a: "Yes. Pay once, own it forever, and get every future update at no extra cost." },
+  { q: "Is it really free?", a: "Yes — TradeTrack Pro is 100% free, forever. No subscriptions, no hidden fees, and every future update is included at no cost." },
   { q: "Does it work for crypto and forex?", a: "Yes. It's market-agnostic — works for forex, crypto, stocks, futures, and options." },
 ];
 
