@@ -59,11 +59,9 @@ export function Navbar() {
               {l.label}
             </a>
           ))}
-          {session ? (
-            <Link to="/dashboard" onClick={() => setOpen(false)}><Button variant="hero" size="sm" className="w-full">Open Dashboard</Button></Link>
-          ) : (
-            <Link to="/signup" onClick={() => setOpen(false)}><Button variant="hero" size="sm" className="w-full">Get Started Free</Button></Link>
-          )}
+          <a href="https://t.me/owners5" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>
+            <Button variant="hero" size="sm" className="w-full">Call Me</Button>
+          </a>
         </div>
       )}
     </header>
