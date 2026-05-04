@@ -54,9 +54,9 @@ export function Navbar() {
               {l.label}
             </a>
           ))}
-          <a href="https://t.me/owners5" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>
-            <Button variant="hero" size="sm" className="w-full">Call Me</Button>
-          </a>
+          <Link to="/login" onClick={() => setOpen(false)}>
+            <Button variant="hero" size="sm" className="w-full">Sign in</Button>
+          </Link>
         </div>
       )}
     </header>
