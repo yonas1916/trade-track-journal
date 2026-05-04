@@ -36,14 +36,12 @@ export function Navbar() {
 
         <div className="hidden md:flex items-center gap-2">
           <ThemeToggle />
-          {session ? (
-            <Link to="/dashboard"><Button variant="hero" size="sm">Open Dashboard</Button></Link>
-          ) : (
-            <>
-              <Link to="/login"><Button variant="ghost" size="sm">Sign in</Button></Link>
-              <Link to="/signup"><Button variant="hero" size="sm">Get Started Free</Button></Link>
-            </>
+          {!session && (
+            <Link to="/login"><Button variant="ghost" size="sm">Sign in</Button></Link>
           )}
+          <a href="https://t.me/owners5" target="_blank" rel="noopener noreferrer">
+            <Button variant="hero" size="sm">Call Me</Button>
+          </a>
         </div>
 
         <div className="md:hidden flex items-center gap-1">
