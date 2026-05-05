@@ -9,12 +9,12 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { session } = useAuth();
   const links = [
-    { href: "#features", label: "Features" },
-    { href: "#how", label: "How It Works" },
-    { href: "#preview", label: "Preview" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "#faq", label: "FAQ" },
-  ];
+    { to: "/features", label: "Features" },
+    { to: "/how-it-works", label: "How It Works" },
+    { to: "/preview", label: "Preview" },
+    { to: "/pricing", label: "Pricing" },
+    { to: "/faq", label: "FAQ" },
+  ] as const;
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/50">
@@ -28,9 +28,9 @@ export function Navbar() {
 
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-foreground transition-smooth">
+            <Link key={l.to} to={l.to} className="hover:text-foreground transition-smooth" activeProps={{ className: "text-foreground font-semibold" }}>
               {l.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -50,9 +50,9 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border/50 bg-background/95 px-6 py-4 flex flex-col gap-4">
           {links.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="text-muted-foreground">
+            <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="text-muted-foreground">
               {l.label}
-            </a>
+            </Link>
           ))}
           <Link to="/login" onClick={() => setOpen(false)}>
             <Button variant="hero" size="sm" className="w-full">Sign in</Button>
