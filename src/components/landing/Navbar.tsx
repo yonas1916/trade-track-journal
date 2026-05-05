@@ -28,9 +28,9 @@ export function Navbar() {
 
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-foreground transition-smooth">
+            <Link key={l.to} to={l.to} className="hover:text-foreground transition-smooth" activeProps={{ className: "text-foreground font-semibold" }}>
               {l.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
