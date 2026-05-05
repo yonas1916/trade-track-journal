@@ -9,12 +9,12 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { session } = useAuth();
   const links = [
-    { href: "#features", label: "Features" },
-    { href: "#how", label: "How It Works" },
-    { href: "#preview", label: "Preview" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "#faq", label: "FAQ" },
-  ];
+    { to: "/features", label: "Features" },
+    { to: "/how-it-works", label: "How It Works" },
+    { to: "/preview", label: "Preview" },
+    { to: "/pricing", label: "Pricing" },
+    { to: "/faq", label: "FAQ" },
+  ] as const;
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/50">
