@@ -50,9 +50,9 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border/50 bg-background/95 px-6 py-4 flex flex-col gap-4">
           {links.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="text-muted-foreground">
+            <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="text-muted-foreground">
               {l.label}
-            </a>
+            </Link>
           ))}
           <Link to="/login" onClick={() => setOpen(false)}>
             <Button variant="hero" size="sm" className="w-full">Sign in</Button>
