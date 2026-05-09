@@ -6,4 +6,5 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig();
+// Disable Cloudflare plugin so the build targets Node.js (required for Vercel)
+export default defineConfig({ cloudflare: false });

@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "buildCommand": "vite build",
+  "outputDirectory": "dist/client",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/_build/(.*)",
+      "destination": "/_build/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/server"
+    }
+  ],
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs22.x",
+      "includeFiles": "dist/server/**"
+    }
+  }
+}
