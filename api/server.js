@@ -1,14 +1,14 @@
 // Vercel serverless function - bridges Node.js to TanStack Start's Web Fetch handler
 
-let handler
+let cachedFetchHandler
 
 async function getHandler() {
-  if (!handler) {
+  if (!cachedFetchHandler) {
     const mod = await import('../dist/server/server.js')
     // Built server exports: { default: { fetch } }
-    handler = mod.default?.fetch ?? mod.fetch
+    cachedFetchHandler = mod.default?.fetch ?? mod.fetch
   }
-  return handler
+  return cachedFetchHandler
 }
 
 async function readBody(req) {
